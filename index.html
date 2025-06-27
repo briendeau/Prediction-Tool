@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Picks Of Fury | Fight Analysis & Prediction Tool</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      :root {
+        --ufc-red: #d20a0a;
+        --ufc-black: #0a0a0a;
+        --ufc-grey: #1a1a1a;
+        --ufc-light: #f0f0f0;
+        --ufc-gold: #d4af37;
+        --ufc-blue: #0066cc;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--ufc-black);
+        color: var(--ufc-light);
+        background-image: radial-gradient(
+            circle at 1% 1%,
+            rgba(210, 10, 10, 0.1) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 99% 99%,
+            rgba(210, 10, 10, 0.1) 0%,
+            transparent 20%
+          );
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header Styles */
+      header {
+        background-color: rgba(10, 10, 10, 0.95);
+        border-bottom: 3px solid var(--ufc-red);
+        padding: 15px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .logo img {
+        height: 50px;
+      }
+
+      .logo h1 {
+        font-size: 1.8rem;
+        background: linear-gradient(to right, var(--ufc-light), var(--ufc-red));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        color: var(--ufc-light);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: color 0.3s;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        color: var(--ufc-red);
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--ufc-red);
+        transition: width 0.3s;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      /* Event Banner */
+      .event-banner {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+          url("https://images.unsplash.com/photo-1586987177719-a0d698a4e5b7?ixlib=rb-4.0.3")
+            center/cover;
+        padding: 60px 0;
+        text-align: center;
+        margin-bottom: 40px;
+        border-bottom: 3px solid var(--ufc-red);
+      }
+
+      .event-title {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: var(--ufc-light);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .event-date {
+        font-size: 1.5rem;
+        color: var(--ufc-red);
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .event-location {
+        font-size: 1.2rem;
+        color: var(--ufc-light);
+        opacity: 0.9;
+      }
+
+      /* Fight Card Section */
+      .section-title {
+        text-align: center;
+        margin: 40px 0 30px;
+        position: relative;
+        font-size: 2rem;
+        color: var(--ufc-light);
+      }
+
+      .section-title::after {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 4px;
+        background: var(--ufc-red);
+        margin: 10px auto;
+        border-radius: 2px;
+      }
+
+      .card-type {
+        background-color: var(--ufc-red);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+      }
+
+      .fight-card {
+        background-color: var(--ufc-grey);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .fight-header {
+        background-color: rgba(210, 10, 10, 0.2);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .fight-weight-class {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--ufc-light);
+      }
+
+      .fight-type {
+        background-color: var(--ufc-gold);
+        color: var(--ufc-black);
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .fighters-container {
+        display: flex;
+        position: relative;
+        min-height: 280px;
+      }
+
+      .fighter {
+        flex: 1;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+      }
+
+      .fighter.selected {
+        background-color: rgba(0, 128, 0, 0.2);
+        box-shadow: inset 0 0 30px rgba(0, 100, 0, 0.5);
+      }
+
+      .fighter-left.selected {
+        border-right: 3px solid green;
+      }
+
+      .fighter-right.selected {
+        border-left: 3px solid green;
+      }
+
+      .vs-circle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70px;
+        height: 70px;
+        background-color: var(--ufc-black);
+        border: 3px solid var(--ufc-red);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 3;
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--ufc-light);
+      }
+
+      .fighter-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 3px solid var(--ufc-red);
+        background-color: #333;
+        margin-bottom: 15px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .fighter-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .fighter-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .fighter-record {
+        font-size: 1.1rem;
+        color: var(--ufc-red);
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+
+      .fighter-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+        margin-top: 15px;
+      }
+
+      .stat-item {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 8px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: #aaa;
+        margin-bottom: 3px;
+      }
+
+      .stat-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ufc-light);
+      }
+
+      .fighter-odds {
+        margin-top: 15px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+
+      .odds-negative {
+        background-color: rgba(0, 128, 0, 0.3);
+        color: #0f0;
+      }
+
+      .odds-positive {
+        background-color: rgba(255, 0, 0, 0.3);
+        color: #f55;
+      }
+
+      .odds-even {
+        background-color: rgba(255, 255, 0, 0.2);
+        color: yellow;
+      }
+
+      .fighter-country {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 8px;
+        color: #aaa;
+        font-size: 0.9rem;
+      }
+
+      .fight-summary {
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .prediction-input {
+        width: 100%;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: var(--ufc-light);
+        font-size: 1rem;
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .prediction-input::placeholder {
+        color: #777;
+      }
+
+      /* Support Section */
+      .support-section {
+        background: linear-gradient(
+            rgba(10, 10, 10, 0.9),
+            rgba(10, 10, 10, 0.9)
+          ),
+          url("https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3")
+            center/cover;
+        padding: 50px 0;
+        text-align: center;
+        margin: 60px 0;
+        border-top: 3px solid var(--ufc-red);
+        border-bottom: 3px solid var(--ufc-red);
+      }
+
+      .support-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: var(--ufc-light);
+      }
+
+      .support-text {
+        max-width: 700px;
+        margin: 0 auto 30px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #ddd;
+      }
+
+      .donation-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .donation-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 30px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .donation-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      .bmc-btn {
+        background-color: #ffdd00;
+        color: #000;
+      }
+
+      .paypal-btn {
+        background-color: #0070ba;
+        color: #fff;
+      }
+
+      /* Action Bar */
+      .action-bar {
+        position: sticky;
+        bottom: 0;
+        background-color: rgba(10, 10, 10, 0.95);
+        padding: 20px 0;
+        border-top: 3px solid var(--ufc-red);
+        z-index: 90;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .action-content {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .action-btn {
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+      }
+
+      .generate-btn {
+        background: linear-gradient(to right, var(--ufc-red), #b30000);
+        color: white;
+      }
+
+      .reset-btn {
+        background: linear-gradient(to right, #444, #222);
+        color: white;
+      }
+
+      .action-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--ufc-black);
+        padding: 40px 0 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .footer-section {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .footer-title {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        color: var(--ufc-light);
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .footer-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--ufc-red);
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a {
+        color: #aaa;
+        text-decoration: none;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .footer-links a:hover {
+        color: var(--ufc-red);
+      }
+
+      .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .social-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        color: var(--ufc-light);
+        font-size: 1.2rem;
+        transition: all 0.3s;
+      }
+
+      .social-icon:hover {
+        background-color: var(--ufc-red);
+        transform: translateY(-3px);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: #777;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .fighters-container {
+          flex-direction: column;
+        }
+
+        .fighter {
+          padding: 20px;
+        }
+
+        .vs-circle {
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .fighter-left.selected {
+          border-right: none;
+          border-bottom: 3px solid green;
+        }
+
+        .fighter-right.selected {
+          border-left: none;
+          border-top: 3px solid green;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .nav-links {
+          gap: 15px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .event-title {
+          font-size: 2rem;
+        }
+
+        .fighter-stats {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .action-content {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .action-btn {
+          width: 100%;
+          max-width: 300px;
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .fighter-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .fighter-image {
+          width: 110px;
+          height: 110px;
+        }
+
+        .fighter-name {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i
+              class="fas fa-fist-raised"
+              style="font-size: 2.5rem; color: #d20a0a"
+            ></i>
+            <h1>PICKS OF FURY | Fight Prediction Tool</h1>
+          </div>
+          <nav class="nav-links">
+            <a href="#"><i class="fas fa-home"></i> Home</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Events</a>
+            <a href="#"><i class="fas fa-chart-line"></i> Stats</a>
+            <a href="#"><i class="fas fa-users"></i> Fighters</a>
+            <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Event Banner -->
+    <section class="event-banner">
+      <div class="container">
+        <h2 class="event-title">UFC 317: Topuria vs Oliveira</h2>
+        <div class="event-date">Saturday, June 28, 2025</div>
+        <div class="event-location">T-Mobile Arena, Las Vegas, Nevada</div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Main Card -->
+      <div class="section-title">Main Card</div>
+      <div class="card-type">Pay-Per-View</div>
+
+      <!-- Fight 1 - Main Event -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Lightweight - Main Event - Title Fight
+          </div>
+          <div class="fight-type">5 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="topuria">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4350812.png&w=350&h=254"
+                alt="Ilia Topuria"
+              />
+            </div>
+            <div class="fighter-name">Ilia Topuria</div>
+            <div class="fighter-record">16-0-0</div>
+            <div class="fighter-odds odds-negative">-500</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Georgia
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'7"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">145 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">69"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">28</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.69</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="oliveira">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2504169.png&w=350&h=254"
+                alt="Charles Oliveira"
+              />
+            </div>
+            <div class="fighter-name">Charles Oliveira</div>
+            <div class="fighter-record">35-10-0</div>
+            <div class="fighter-odds odds-positive">+350</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'10"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">156 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">74"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">35</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">3.40</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details (e.g. Round 2 TKO)"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 2 - Co-Main Event -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Flyweight - Title Fight</div>
+          <div class="fight-type">5 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="pantoja">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2560746.png&w=350&h=254"
+                alt="Alexandre Pantoja"
+              />
+            </div>
+            <div class="fighter-name">Alexandre Pantoja</div>
+            <div class="fighter-record">29-5-0</div>
+            <div class="fighter-odds odds-negative">-250</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">124 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">67.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">35</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.41</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="kara-france">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4243885.png&w=350&h=254"
+                alt="Kai Kara-France"
+              />
+            </div>
+            <div class="fighter-name">Kai Kara-France</div>
+            <div class="fighter-record">25-11-0</div>
+            <div class="fighter-odds odds-positive">+200</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> New Zealand
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'4"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">125 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">69"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">32</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.56</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 3 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Flyweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container"https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3085551.png&w=350&h=254>
+          <div class="fighter fighter-left" data-fighter="royval">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4239928.png&w=350&h=254"
+                alt="Brandon Royval"
+              />
+            </div>
+            <div class="fighter-name">Brandon Royval</div>
+            <div class="fighter-record">17-7-0</div>
+            <div class="fighter-odds odds-even">EVEN</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'9"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">125 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">68"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">32</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Southpaw</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.46</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="van">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5120301.png&w=350&h=254"
+                alt="Joshua Van"
+              />
+            </div>
+            <div class="fighter-name">Joshua Van</div>
+            <div class="fighter-record">14-2-0</div>
+            <div class="fighter-odds odds-negative">-120</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Myanmar
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">125 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">65"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">23</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">8.20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 4 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Lightweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="dariush">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3085551.png&w=350&h=254"
+                alt="Beneil Dariush"
+              />
+            </div>
+            <div class="fighter-name">Beneil Dariush</div>
+            <div class="fighter-record">22-6-1</div>
+            <div class="fighter-odds odds-negative">-110</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'10"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">156 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">72"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">36</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Southpaw</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">3.78</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="moicano">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3028863.png&w=350&h=254"
+                alt="Renato Moicano"
+              />
+            </div>
+            <div class="fighter-name">Renato Moicano</div>
+            <div class="fighter-record">20-6-1</div>
+            <div class="fighter-odds odds-negative">-110</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'11"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">155 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">72"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">36</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.36</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 5 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Bantamweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="talbott">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5144008.png&w=350&h=254"
+                alt="Payton Talbott"
+              />
+            </div>
+            <div class="fighter-name">Payton Talbott</div>
+            <div class="fighter-record">9-1-0</div>
+            <div class="fighter-odds odds-positive">+155</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'10"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">135 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">70.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">26</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Switch</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">6.73</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="lima">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5101694.png&w=350&h=254"
+                alt="Felipe Lima"
+              />
+            </div>
+            <div class="fighter-name">Felipe Lima</div>
+            <div class="fighter-record">14-1-0</div>
+            <div class="fighter-odds odds-negative">-185</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'6"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">146 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">68"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">27</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">3.50</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Prelims Section -->
+      <div class="section-title" style="margin-top: 60px">Preliminary Card</div>
+      <div class="card-type">ESPN/ESPN+/Disney+</div>
+
+      <!-- Fight 6 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Middleweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="hermansson">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3074102.png&w=350&h=254"
+                alt="Jack Hermansson"
+              />
+            </div>
+            <div class="fighter-name">Jack Hermansson</div>
+            <div class="fighter-record">24-8-0</div>
+            <div class="fighter-odds odds-positive">+185</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Norway
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'1"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">185 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">77.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">37</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">5.09</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="rodrigues">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4690541.png&w=350&h=254"
+                alt="Gregory Rodrigues"
+              />
+            </div>
+            <div class="fighter-name">Gregory Rodrigues</div>
+            <div class="fighter-record">16-6-0</div>
+            <div class="fighter-odds odds-negative">-225</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'3"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">186 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">75"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">33</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">5.60</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 7 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Featherweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="amil">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5027356.png&w=350&h=254"
+                alt="Hyder Amil"
+              />
+            </div>
+            <div class="fighter-name">Hyder Amil</div>
+            <div class="fighter-record">11-0-0</div>
+            <div class="fighter-odds odds-positive">+135</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Philippines
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'9"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">146 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">70"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">35</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Switch</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">6.84</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="delgado">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5223435.png&w=350&h=254"
+                alt="Jose Miguel Delgado"
+              />
+            </div>
+            <div class="fighter-name">Jose Miguel Delgado</div>
+            <div class="fighter-record">9-1-0</div>
+            <div class="fighter-odds odds-negative">-170</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'11"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">146 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">73"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">27</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Switch</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">6.50</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 8 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Women's Flyweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="araujo">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4379362.png&w=350&h=254"
+                alt="Viviane Araujo"
+              />
+            </div>
+            <div class="fighter-name">Viviane Araujo</div>
+            <div class="fighter-record">13-6-0</div>
+            <div class="fighter-odds odds-positive">+210</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'4"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">126 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">68"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">38</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">4.04</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="cortez">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4243624.png&w=350&h=254"
+                alt="Tracy Cortez"
+              />
+            </div>
+            <div class="fighter-name">Tracy Cortez</div>
+            <div class="fighter-record">11-2-0</div>
+            <div class="fighter-odds odds-negative">-260</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">126 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">65.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">31</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">3.72</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 9 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Lightweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="mckinney">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4425604.png&w=350&h=254"
+                alt="Terrance McKinney"
+              />
+            </div>
+            <div class="fighter-name">Terrance McKinney</div>
+            <div class="fighter-record">16-7-0</div>
+            <div class="fighter-odds odds-negative">-170</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'10"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">156 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">73.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">30</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Switch</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">5.91</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="borshchev">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4877915.png&w=350&h=254"
+                alt="Viacheslav Borshchev"
+              />
+            </div>
+            <div class="fighter-name">Viacheslav Borshchev</div>
+            <div class="fighter-record">8-5-1</div>
+            <div class="fighter-odds odds-positive">+140</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Russia
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">5'11"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">156 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">69"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">33</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">5.25</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Early Prelims Section -->
+      <div class="section-title" style="margin-top: 60px">Early Prelims</div>
+      <div class="card-type">ESPN+/Disney+</div>
+
+      <!-- Fight 10 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Welterweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="price">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4077451.png&w=350&h=254"
+                alt="Niko Price"
+              />
+            </div>
+            <div class="fighter-name">Niko Price</div>
+            <div class="fighter-record">16-8-0</div>
+            <div class="fighter-odds odds-positive">+1000</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'0"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">170 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">76"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">35</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">5.21</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="smith">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5149961.png&w=350&h=254"
+                alt="Jacobe Smith"
+              />
+            </div>
+            <div class="fighter-name">Jacobe Smith</div>
+            <div class="fighter-record">10-0-0</div>
+            <div class="fighter-odds odds-negative">-3000</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'2"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">170 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">72"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">29</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Southpaw</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">7.34</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 11 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Heavyweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="diniz">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5145497.png&w=350&h=254"
+                alt="Jhonata Diniz"
+              />
+            </div>
+            <div class="fighter-name">Jhonata Diniz</div>
+            <div class="fighter-record">8-1-0</div>
+            <div class="fighter-odds odds-negative">-350</div>
+            <div class="fighter-country">
+              <i class="fas fa-flag"></i> Brazil
+            </div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'4"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">253 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">79.5"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">34</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Orthodox</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">3.36</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="hines">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5229339.png&w=350&h=254"
+                alt="Alvin Hines"
+              />
+            </div>
+            <div class="fighter-name">Alvin Hines</div>
+            <div class="fighter-record">7-0-0</div>
+            <div class="fighter-odds odds-positive">+270</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'2"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">258 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">--</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">33</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">--</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Fight 12 -->
+      <div class="fight-card">
+        <div class="fight-header">
+          <div class="fight-weight-class">Middleweight</div>
+          <div class="fight-type">3 Rounds</div>
+        </div>
+        <div class="fighters-container">
+          <div class="fighter fighter-left" data-fighter="ewert">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5282842.png&w=350&h=254"
+                alt="Christopher Ewert"
+              />
+            </div>
+            <div class="fighter-name">Christopher Ewert</div>
+            <div class="fighter-record">7-0-0</div>
+            <div class="fighter-odds odds-positive">+125</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> Chile</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'1"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">185 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">--</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">31</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">--</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">--</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="fighter fighter-right" data-fighter="mcvey">
+            <div class="fighter-image">
+              <img
+                src="https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/5291733.png&w=350&h=254"
+                alt="Jackson McVey"
+              />
+            </div>
+            <div class="fighter-name">Jackson McVey</div>
+            <div class="fighter-record">6-0-0</div>
+            <div class="fighter-odds odds-negative">-150</div>
+            <div class="fighter-country"><i class="fas fa-flag"></i> USA</div>
+            <div class="fighter-stats">
+              <div class="stat-item">
+                <div class="stat-label">Height</div>
+                <div class="stat-value">6'4"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Weight</div>
+                <div class="stat-value">185 lbs</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Reach</div>
+                <div class="stat-value">77"</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Age</div>
+                <div class="stat-value">26</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Stance</div>
+                <div class="stat-value">Southpaw</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">SIG STR</div>
+                <div class="stat-value">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fight-summary">
+          <textarea
+            class="prediction-input"
+            placeholder="Enter your prediction details"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Support Section -->
+      <section class="support-section">
+        <div class="container">
+          <h3 class="support-title">Support This Project</h3>
+          <p class="support-text">
+            If you find this UFC prediction tool valuable for your YouTube
+            channel, fantasy lineups, and general fight analysis, consider supporting its development and
+            maintenance. Your contribution helps keep this resource updated and
+            ad-free for all fight fans.
+          </p>
+          <div class="donation-buttons">
+            <a href="https://www.paypal.com/donate/?business=C4XD4SZ7GM3PW&no_recurring=0&item_name=Thank+you+for+supporting+the+show%21&currency_code=USD" target="_blank" class="donation-btn bmc-btn">
+              <i class="fas fa-coffee"></i> Buy Me a Coffee
+            </a>
+            <a href="https://www.paypal.com/donate/?business=C4XD4SZ7GM3PW&no_recurring=0&item_name=Thank+you+for+supporting+the+show%21&currency_code=USD" target="_blank" class="donation-btn paypal-btn">
+              <i class="fab fa-paypal"></i> PayPal Donation
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <div class="container">
+        <div class="action-content">
+          <button class="action-btn generate-btn" id="generate-pdf">
+            <i class="fas fa-file-pdf"></i> Generate Prediction Sheet
+          </button>
+          <button class="action-btn reset-btn" id="reset-selections">
+            <i class="fas fa-redo"></i> Reset All Selections
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4 class="footer-title">UFC Predictor Pro</h4>
+            <p style="color: #aaa; line-height: 1.6; margin-bottom: 20px">
+              The ultimate tool for fight fans and analysts to predict UFC event
+              outcomes, analyze fighter stats, and share predictions with the
+              MMA community.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="social-icon"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="social-icon"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+            </div>
+          </div>
+
+          <div class="footer-section">
+            <h4 class="footer-title">Quick Links</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="#"
+                  ><i class="fas fa-chevron-right"></i> Upcoming Events</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fas fa-chevron-right"></i> Fighter Rankings</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fas fa-chevron-right"></i> Prediction History</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fas fa-chevron-right"></i> Community Predictions</a
+                >
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fas fa-chevron-right"></i> Fight Analysis</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h4 class="footer-title">Contact Us</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="#"
+                  ><i class="fas fa-envelope"></i> stayblebrian@gmail.com</a
+                >
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-headset"></i> Help Center</a>
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-bug"></i> Report an Issue</a>
+              </li>
+              <li>
+                <a href="#"><i class="fas fa-lightbulb"></i> Feature Request</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="copyright">
+          &copy; 2025 Picks Of Fury | This site is not affiliated with the
+          Ultimate Fighting Championship (UFC). All fighter information and
+          images are property of UFC and used under a fair-use policy.
+        </div>
+      </div>
+    </footer>
+    <script>
+      // Fighter selection functionality
+      document.querySelectorAll(".fighter").forEach((fighter) => {
+        fighter.addEventListener("click", function () {
+          // Find the parent fight card
+          const fightCard = this.closest(".fight-card");
+
+          // Remove selected class from both fighters in this card
+          fightCard.querySelectorAll(".fighter").forEach((f) => {
+            f.classList.remove("selected");
+          });
+
+          // Add selected class to clicked fighter
+          this.classList.add("selected");
+        });
+      });
+
+      // Reset selections
+      document
+        .getElementById("reset-selections")
+        .addEventListener("click", function () {
+          document.querySelectorAll(".fighter").forEach((fighter) => {
+            fighter.classList.remove("selected");
+          });
+          document.querySelectorAll(".prediction-input").forEach((input) => {
+            input.value = "";
+          });
+          alert("All selections have been reset!");
+        });
+
+      // Generate PDF functionality - FULLY WORKING VERSION
+      document
+        .getElementById("generate-pdf")
+        .addEventListener("click", function () {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          // Set initial variables
+          let yPosition = 30;
+          const pageHeight = doc.internal.pageSize.height;
+          let pageNumber = 1;
+          const fightCards = document.querySelectorAll(".fight-card");
+          let hasPredictions = false;
+
+          // Add header to first page
+          addHeader(doc, "UFC 317: Topuria vs Oliveira Predictions");
+
+          // Process each fight card
+          fightCards.forEach((card, index) => {
+            const selectedFighter = card.querySelector(".fighter.selected");
+            const predictionInput = card.querySelector(".prediction-input");
+
+            if (selectedFighter) {
+              hasPredictions = true;
+
+              // Check if we need a new page (leave 40mm at bottom for footer)
+              if (yPosition > pageHeight - 40) {
+                doc.addPage();
+                pageNumber++;
+                yPosition = 30;
+                addHeader(doc, `UFC 317 Predictions (cont'd)`);
+              }
+
+              const fightHeader = card.querySelector(
+                ".fight-weight-class"
+              ).textContent;
+              const fighterName =
+                selectedFighter.querySelector(".fighter-name").textContent;
+              const prediction =
+                predictionInput.value || "No prediction details provided";
+
+              // Fight header
+              doc.setFontSize(12);
+              doc.setTextColor(210, 10, 10); // UFC red
+              doc.text(`${index + 1}. ${fightHeader}`, 20, yPosition);
+              yPosition += 7;
+
+              // Fighter name
+              doc.setFontSize(10);
+              doc.setTextColor(0); // Black
+              doc.text(`✔ Selected Winner: ${fighterName}`, 25, yPosition);
+              yPosition += 7;
+
+              // Prediction - handle multi-line text
+              const splitPrediction = doc.splitTextToSize(
+                `Prediction: ${prediction}`,
+                170
+              );
+              doc.text(splitPrediction, 25, yPosition);
+              yPosition += splitPrediction.length * 6 + 10;
+
+              // Add separator if not last fight
+              if (index < fightCards.length - 1) {
+                doc.setDrawColor(200);
+                doc.setLineWidth(0.2);
+                doc.line(20, yPosition, 190, yPosition);
+                yPosition += 10;
+              }
+            }
+          });
+
+          // Add footer
+          addFooter(doc, pageNumber, hasPredictions);
+
+          // Save the PDF
+          doc.save("ufc-predictions.pdf");
+
+          // Helper functions
+          function addHeader(doc, title) {
+            doc.setFontSize(18);
+            doc.setTextColor(210, 10, 10); // UFC red
+            doc.text(title, 105, 15, { align: "center" });
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text("June 28, 2025 | T-Mobile Arena, Las Vegas", 105, 22, {
+              align: "center",
+            });
+
+            doc.setDrawColor(210, 10, 10);
+            doc.setLineWidth(0.5);
+            doc.line(20, 25, 190, 25);
+          }
+
+          function addFooter(doc, pageNumber, hasPredictions) {
+            const pageHeight = doc.internal.pageSize.height;
+
+            if (!hasPredictions) {
+              doc.setFontSize(16);
+              doc.setTextColor(150);
+              doc.text("No predictions selected!", 105, 100, {
+                align: "center",
+              });
+              doc.setFontSize(12);
+              doc.text(
+                "Select fighters and enter predictions to generate your fight sheet",
+                105,
+                110,
+                { align: "center" }
+              );
+            }
+
+            // Add page number if multi-page
+            if (pageNumber > 1) {
+              for (let i = 1; i <= pageNumber; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(100);
+                doc.text(`Page ${i} of ${pageNumber}`, 105, pageHeight - 15, {
+                  align: "center",
+                });
+              }
+            }
+
+            // Add watermark
+            doc.setFontSize(10);
+            doc.setTextColor(200);
+            doc.text("Created by Picks Of Fury", 105, pageHeight - 10, {
+              align: "center",
+            });
+          }
+        });
+    </script>
+  </body>
+</html>
