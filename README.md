@@ -3,6 +3,10 @@
 ![image](https://github.com/user-attachments/assets/c73b70b5-2ad9-4420-88ae-439a363bde00)
 
 A dynamic single-page web application for analyzing UFC fights, making predictions, and generating shareable prediction sheets. Built for MMA content creators and fight analysts.
+Users can track their selected picks and detailed notes using a downloadable PDF completely free.
+
+![image](https://github.com/user-attachments/assets/5d7bbb51-fa94-46b5-8500-1e7cfa1ec890)
+
 
 ## 🚀 Features
 
