@@ -1,7 +1,6 @@
 # UFC Predictor Pro 🥊
 
-https://github.com/user-attachments/assets/02a97d7a-869d-4e0b-9c22-8f07094d6388
-![App Screenshot]([/assets/screenshot.png](https://github.com/user-attachments/assets/02a97d7a-869d-4e0b-9c22-8f07094d6388))
+![image](https://github.com/user-attachments/assets/c73b70b5-2ad9-4420-88ae-439a363bde00)
 
 A dynamic single-page web application for analyzing UFC fights, making predictions, and generating shareable prediction sheets. Built for MMA content creators and fight analysts.
 
@@ -19,9 +18,3 @@ A dynamic single-page web application for analyzing UFC fights, making predictio
 - **PDF Generation**: jsPDF library
 - **Icons**: Font Awesome 6
 - **Design**: Custom UFC-inspired UI with responsive layouts
-
-## 🔧 Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/ufc-predictor-pro.git
