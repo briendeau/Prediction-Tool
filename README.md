@@ -1,4 +1,4 @@
-# UFC/MMA Prediction & Analysis Tool 🥊
+# UFC/MMA Prediction & Analysis Tool
 
 ![image](https://github.com/user-attachments/assets/c73b70b5-2ad9-4420-88ae-439a363bde00)
 
