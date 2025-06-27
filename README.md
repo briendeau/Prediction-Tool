@@ -1,7 +1,7 @@
 # UFC Predictor Pro 🥊
 
-![App Screenshot](![image](https://github.com/user-attachments/assets/02a97d7a-869d-4e0b-9c22-8f07094d6388)
-) *Replace with actual screenshot path*
+(![image](https://github.com/user-attachments/assets/02a97d7a-869d-4e0b-9c22-8f07094d6388)
+
 
 A dynamic single-page web application for analyzing UFC fights, making predictions, and generating shareable prediction sheets. Built for MMA content creators and fight analysts.
 
