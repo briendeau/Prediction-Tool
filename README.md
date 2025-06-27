@@ -1,5 +1,7 @@
 # UFC/MMA Prediction & Analysis Tool
 
+Live Link: https://briendeau.github.io/Prediction-Tool/
+
 ![image](https://github.com/user-attachments/assets/c73b70b5-2ad9-4420-88ae-439a363bde00)
 
 A dynamic single-page web application for analyzing UFC fights, making predictions, and generating shareable prediction sheets. Built for MMA content creators and fight analysts.
